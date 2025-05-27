@@ -11,7 +11,7 @@ from collections import Counter
 from fpdf import FPDF
 
 # Configurar la clave de API de Gemini
-genai.configure(api_key=os.environ["GENAI_API_KEY"])
+genai.configure(api_key=st.secrets["GENAI_API_KEY"])
 #genai.configure(api_key=os.getenv("GENAI_API_KEY"))
 
 # Seleccionar el modelo de Gemini
