@@ -7,4 +7,4 @@ scikit-learn
 openpyxl
 fpdf
 spacy
-https://github.com/explosion/spacy-models/releases/download/es_core_news_md-3.7.0/es_core_news_md-3.7.0.tar.gz
+es-core-news-md==3.7.0
