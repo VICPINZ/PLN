@@ -5,7 +5,6 @@ import joblib
 from docx import Document
 import google.generativeai as genai
 import spacy
-import es_core_news_md
 from sklearn.base import BaseEstimator, TransformerMixin
 import string
 from collections import Counter
