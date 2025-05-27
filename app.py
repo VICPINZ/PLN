@@ -12,13 +12,22 @@ from fpdf import FPDF
 
 # Configurar la clave de API de Gemini
 genai.configure(api_key=st.secrets["GENAI_API_KEY"])
-#genai.configure(api_key=os.getenv("GENAI_API_KEY"))
 
 # Seleccionar el modelo de Gemini
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-nlp = es_core_news_md.load()
+# Cargar modelo de spaCy con fallback si no está descargado
+try:
+    nlp = spacy.load("es_core_news_md")
+except OSError:
+    os.system("python -m spacy download es_core_news_md")
+    nlp = spacy.load("es_core_news_md")
 
+# Cargar modelos de clasificación una sola vez
+pipeline = joblib.load('modelo_rf.pkl')
+le = joblib.load('label_encoder.pkl')
+
+# Clase SpacyVectorizer (si la necesitas en el pipeline)
 class SpacyVectorizer(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         return self
@@ -27,8 +36,6 @@ class SpacyVectorizer(BaseEstimator, TransformerMixin):
 
 # Función para predecir nuevas clasificaciones
 def predecir_clasificacion(textos):
-    pipeline = joblib.load('modelo_rf.pkl')
-    le = joblib.load('label_encoder.pkl')
     predicciones = pipeline.predict(textos)
     return le.inverse_transform(predicciones)
 
@@ -43,7 +50,7 @@ def generar_recomendaciones(comentarios):
         return f"Ocurrió un error al generar las recomendaciones: {e}"
 
 # Función para generar informe pdf
-def generar_informe_pdf(comentarios, recomendaciones, nombre_archivo, resumen):
+def generar_informe_pdf(resumen, recomendaciones, nombre_archivo):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
@@ -106,16 +113,20 @@ if archivo:
             st.dataframe(pd.DataFrame(resumen))
 
             # Filtrar comentarios tipo Recomendación
-            recomendaciones_comentarios = df[df['clasificacion'] == 'COMENTARIO'][variable].tolist()
+            recomendaciones_comentarios = df[df['clasificacion'].str.lower() == 'comentario'][variable].tolist()
 
             if recomendaciones_comentarios:
                 recomendaciones_generadas = generar_recomendaciones(recomendaciones_comentarios)
             else:
                 recomendaciones_generadas = "No se encontraron recomendaciones para analizar."
 
+            # Mostrar recomendaciones en pantalla
+            st.subheader("Recomendaciones Generadas")
+            st.write(recomendaciones_generadas)
+
             # Generar informe PDF
             nombre_archivo = "Informe_Encuesta.pdf"
-            generar_informe_pdf(df[[variable, 'clasificacion']].rename(columns={variable: 'comentario'}),recomendaciones_generadas, nombre_archivo, resumen)
+            generar_informe_pdf(resumen, recomendaciones_generadas, nombre_archivo)
 
             with open(nombre_archivo, "rb") as f:
                 st.download_button("Descargar Informe", f, file_name=nombre_archivo)
