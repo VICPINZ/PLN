@@ -11,7 +11,7 @@ import string
 from collections import Counter
 from fpdf import FPDF
 import spacy
-import es_core_news_md
+
 
 # Cargar modelo de spaCy
 nlp = spacy.load("es_core_news_sm")
