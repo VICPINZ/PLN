@@ -13,7 +13,8 @@ from fpdf import FPDF
 import spacy
 import es_core_news_md
 
-nlp = es_core_news_md.load()
+# Cargar modelo de spaCy
+nlp = spacy.load("es_core_news_md")
 
 # Configurar la clave de API de Gemini
 genai.configure(api_key=st.secrets["GENAI_API_KEY"])
