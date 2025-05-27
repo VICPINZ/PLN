@@ -16,9 +16,11 @@ genai.configure(api_key=st.secrets["GENAI_API_KEY"])
 # Seleccionar el modelo de Gemini
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-import spacy
-
-nlp = spacy.load("es_core_news_md")
+try:
+    nlp = spacy.load("es_core_news_md")
+except OSError:
+    os.system("python -m spacy download es_core_news_md")
+    nlp = spacy.load("es_core_news_md")
 
 
 # Cargar modelos de clasificación una sola vez
