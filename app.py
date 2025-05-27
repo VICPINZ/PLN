@@ -5,6 +5,7 @@ import joblib
 from docx import Document
 import google.generativeai as genai
 import spacy
+import es_core_news_md
 from sklearn.base import BaseEstimator, TransformerMixin
 import string
 from collections import Counter
@@ -17,7 +18,7 @@ genai.configure(api_key=st.secrets["GENAI_API_KEY"])
 # Seleccionar el modelo de Gemini
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-nlp = spacy.load("es_core_news_md")
+nlp = es_core_news_md.load()
 
 class SpacyVectorizer(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
