@@ -7,4 +7,4 @@ scikit-learn
 openpyxl
 fpdf
 spacy
-python -m spacy download es_core_news_md
+es_core_news_md
