@@ -1,0 +1,130 @@
+¡Claro! Vamos a detallar paso a paso cómo instalar los requerimientos en **Visual Studio Code (VSCode)**. Aquí va el procedimiento optimizado para ti:
+
+---
+
+## 🖥️ Cómo instalar los requerimientos en VSCode
+
+### 📌 Paso 1️⃣ - Abre tu proyecto en VSCode
+
+1. Abre Visual Studio Code.
+2. Selecciona "File" > "Open Folder" y abre la carpeta donde tienes tu proyecto (`app.py`, `entrenar_modelo.py`, y `requirements.txt`).
+
+---
+
+### 📌 Paso 2️⃣ - Abre el terminal integrado
+
+En VSCode, abre la terminal integrada con:
+
+* Menú superior: **Terminal** > **New Terminal**
+
+---
+
+### 📌 Paso 3️⃣ - Crea y activa el entorno virtual (opcional pero recomendado)
+
+#### Crear el entorno virtual:
+
+```bash
+python -m venv venv
+```
+
+Esto crea una carpeta `venv` donde se guardarán las dependencias.
+
+#### Activar el entorno virtual:
+
+* En **Windows**:
+
+  ```bash
+  .\venv\Scripts\activate
+  ```
+* En **Mac/Linux**:
+
+  ```bash
+  source venv/bin/activate
+  ```
+
+Cuando esté activado, verás algo como `(venv)` en la terminal.
+
+✅ Esto significa que **todo lo que instales irá dentro de este entorno virtual, no en el sistema global.**
+
+---
+
+### 📌 Paso 4️⃣ - Desactiva y elimina el entorno virtual actual
+
+Ejecuta:
+
+```bash
+deactivate
+rmdir /s /q venv
+```
+
+### 📌 Paso 5️⃣ - Crea y activa el entorno virtual nuevamente
+
+Ejecuta:
+
+```bash
+python -m venv venv
+.\venv\Scripts\activate
+
+$env:GENAI_API_KEY="AIzaSyAi30PcnoWiulzcl9tP4ZSg91Xe_90Y6xc"
+```
+
+### 📌 Paso 6️⃣ - Instala las dependencias del proyecto
+
+Ejecuta:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+### 📌 Paso 7️⃣ - Descarga el modelo de spaCy (solo una vez)
+
+Ejecuta este comando para descargar el modelo de lenguaje en español de spaCy:
+
+```bash
+python -m spacy download es_core_news_md
+
+
+```
+
+Este paso es necesario porque el modelo es el que convierte los textos a vectores para el Random Forest.
+
+---
+
+### 📌 Paso 8️⃣ - Ejecuta tu aplicación
+
+Una vez hecho todo, ejecuta la aplicación con:
+
+```bash
+python entrenar_modelo.py
+
+luego 
+
+streamlit run app.py
+```
+
+VSCode te mostrará un enlace (normalmente `http://localhost:8501`) para abrir en tu navegador.
+
+---
+
+### 📌 Paso 9️⃣ (opcional) - Verifica tu instalación
+
+✅ En el terminal, ejecuta:
+
+```bash
+pip list
+```
+
+Y deberías ver algo como:
+
+```
+streamlit
+pandas
+python-docx
+openpyxl
+scikit-learn
+spacy
+requests
+```
+

@@ -1,0 +1,9 @@
+streamlit
+pandas
+joblib
+python-docx
+google-generativeai
+scikit-learn
+spacy
+openpyxl
+fpdf
