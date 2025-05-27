@@ -11,14 +11,9 @@ import string
 from collections import Counter
 from fpdf import FPDF
 import spacy
+import es_core_news_md
 
-
-# Cargar el modelo de spaCy
-@st.cache_resource
-def load_model():
-    return spacy.load("es_core_news_md")
-
-nlp = load_model()
+nlp = es_core_news_md.load()
 
 # Configurar la clave de API de Gemini
 genai.configure(api_key=st.secrets["GENAI_API_KEY"])
