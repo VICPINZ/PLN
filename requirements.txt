@@ -1,11 +1,12 @@
-streamlit>=1.30.0
-pandas>=2.0.0
+streamlit
+pandas
 joblib
 python-docx
-google-generativeai==0.4.1
-scikit-learn>=1.4.0
+google-generativeai
+scikit-learn
 openpyxl
-fpdf>=2.7.0
-spacy>=3.7.0
-es-core-news-md @ https://github.com/explosion/spacy-models/releases/download/es_core_news_md-3.7.0/es_core_news_md-3.7.0-py3-none-any.whl
+fpdf
+spacy
+https://github.com/explosion/spacy-models/releases/download/es_core_news_md-3.7.0/es_core_news_md-3.7.0.tar.gz
+
 
