@@ -1,6 +1,6 @@
 streamlit
 pandas
-joblib
+joblib==1.4.2
 python-docx
 google-generativeai
 scikit-learn
@@ -8,5 +8,3 @@ openpyxl
 fpdf
 spacy
 https://github.com/explosion/spacy-models/releases/download/es_core_news_md-3.7.0/es_core_news_md-3.7.0.tar.gz
-
-
