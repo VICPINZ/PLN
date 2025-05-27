@@ -1,14 +1,24 @@
+import subprocess
+import sys
 import os
 import streamlit as st
 import pandas as pd
 import joblib
 from docx import Document
 import google.generativeai as genai
-import spacy
 from sklearn.base import BaseEstimator, TransformerMixin
 import string
 from collections import Counter
 from fpdf import FPDF
+
+# Intentar importar el modelo de spaCy o descargarlo si no está disponible
+try:
+    import es_core_news_md
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "spacy", "download", "es_core_news_md"])
+
+import spacy
+nlp = spacy.load("es_core_news_md")
 
 # Configurar la clave de API de Gemini
 genai.configure(api_key=st.secrets["GENAI_API_KEY"])
@@ -16,14 +26,7 @@ genai.configure(api_key=st.secrets["GENAI_API_KEY"])
 # Seleccionar el modelo de Gemini
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-try:
-    nlp = spacy.load("es_core_news_md")
-except OSError:
-    os.system("python -m spacy download es_core_news_md")
-    nlp = spacy.load("es_core_news_md")
-
-
-# Cargar modelos de clasificación una sola vez
+# Cargar modelos de clasificación
 pipeline = joblib.load('modelo_rf.pkl')
 le = joblib.load('label_encoder.pkl')
 
@@ -49,7 +52,7 @@ def generar_recomendaciones(comentarios):
     except Exception as e:
         return f"Ocurrió un error al generar las recomendaciones: {e}"
 
-# Función para generar informe pdf
+# Función para generar informe PDF
 def generar_informe_pdf(resumen, recomendaciones, nombre_archivo):
     pdf = FPDF()
     pdf.add_page()
