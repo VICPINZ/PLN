@@ -10,15 +10,10 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import string
 from collections import Counter
 from fpdf import FPDF
-
-# Intentar importar el modelo de spaCy o descargarlo si no está disponible
-try:
-    import es_core_news_md
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "spacy", "download", "es_core_news_md"])
-
 import spacy
-nlp = spacy.load("es_core_news_md")
+import es_core_news_md
+
+nlp = es_core_news_md.load()
 
 # Configurar la clave de API de Gemini
 genai.configure(api_key=st.secrets["GENAI_API_KEY"])
