@@ -5,4 +5,4 @@ nltk
 python-docx
 google-generativeai
 openpyxl
-
+joblib
