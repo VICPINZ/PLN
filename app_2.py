@@ -8,7 +8,7 @@ import string
 from collections import Counter
 import nltk
 import google.generativeai as genai
-from train_model import entrenar_modelo
+from entrenar_modelo import entrenar_modelo
 
 # Configurar API Gemini
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
