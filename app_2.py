@@ -27,26 +27,24 @@ stopwords_es = set(stopwords.words('spanish'))
 
 # Función para entrenar modelo
 def entrenar_modelo(df, variable_texto, columna_clasificacion):
-    df[variable_texto] = df[variable_texto].fillna('')
-    X = df[variable_texto]
-    y = df[columna_clasificacion]
-
-    le = LabelEncoder()
-    y_encoded = le.fit_transform(y)
-
-    pipeline = Pipeline([
-        ('tfidf', TfidfVectorizer(max_features=5000, stop_words='spanish')),
-        ('mlp', MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=300, random_state=42))
+  df[variable_texto] = df[variable_texto].astype(str).fillna('')
+  X = df[variable_texto]
+  y = df[columna_clasificacion]
+  le = LabelEncoder()
+  y_encoded = le.fit_transform(y)
+  pipeline = Pipeline([
+    ('tfidf', TfidfVectorizer(max_features=5000, stop_words='spanish')),
+    ('mlp', MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=300, random_state=42))
     ])
+  
+  pipeline.fit(X, y_encoded)
+  y_pred = pipeline.predict(X)
+  acc = accuracy_score(y_encoded, y_pred)
 
-    pipeline.fit(X, y_encoded)
-    y_pred = pipeline.predict(X)
-    acc = accuracy_score(y_encoded, y_pred)
+  joblib.dump(pipeline, 'modelo_rf.pkl')
+  joblib.dump(le, 'label_encoder.pkl')
 
-    joblib.dump(pipeline, 'modelo_rf.pkl')
-    joblib.dump(le, 'label_encoder.pkl')
-
-    return acc
+  return acc
 
 # Función para predecir
 def predecir_clasificacion(textos):
