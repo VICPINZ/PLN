@@ -34,8 +34,7 @@ def entrenar_modelo(df, variable_texto, columna_clasificacion):
   y_encoded = le.fit_transform(y)
   pipeline = Pipeline([
     ('tfidf', TfidfVectorizer(max_features=5000, stop_words='spanish')),
-    ('mlp', MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=300, random_state=42))
-    ])
+    ('mlp', MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=300, random_state=42))])
   
   pipeline.fit(X, y_encoded)
   y_pred = pipeline.predict(X)
