@@ -18,6 +18,8 @@ import google.generativeai as genai
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 model = genai.GenerativeModel("gemini-1.5-flash")
 
+streamlit run limpiar_codigo.py
+
 # Descargar stopwords
 nltk.download('stopwords')
 from nltk.corpus import stopwords
