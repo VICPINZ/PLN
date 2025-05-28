@@ -1,8 +1,8 @@
 streamlit
 pandas
 scikit-learn
-joblib
-fpdf
+nltk
+python-docx
 google-generativeai
 openpyxl
 
