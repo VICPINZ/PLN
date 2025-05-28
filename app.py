@@ -4,15 +4,13 @@ import pandas as pd
 import joblib
 from sklearn.exceptions import NotFittedError
 
-# Cargar modelos entrenados
-try:
-    pipeline = joblib.load('modelo_rf.pkl')
-    le = joblib.load('label_encoder.pkl')
-except FileNotFoundError:
-    pipeline = None
-    le = None
+# Variables globales
+pipeline = None
+le = None
 
 def main():
+    global pipeline, le  # Declarar como global al inicio
+
     st.set_page_config(page_title="Clasificación de Comentarios", layout="centered")
     st.title("📊 Clasificador de Comentarios (PLN)")
 
@@ -58,7 +56,6 @@ def main():
                     entrenar_modelo(archivo_path, columna_texto, columna_clasificacion)
 
                     # Recargar modelos
-                    global pipeline, le
                     pipeline = joblib.load('modelo_rf.pkl')
                     le = joblib.load('label_encoder.pkl')
 
