@@ -21,13 +21,16 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 
 # --- Función para predecir clasificación ---
 def predecir_clasificacion(textos):
-    try:
-        pipeline = joblib.load('modelo_rf.pkl')
-        le = joblib.load('label_encoder.pkl')
-    except FileNotFoundError:
-        st.error("El modelo entrenado no se ha encontrado. Asegúrate de entrenar el modelo primero.")
-        return None
+    modelo_path = 'modelo_rf.pkl'
+    encoder_path = 'label_encoder.pkl'
 
+    if not os.path.isfile(modelo_path) or not os.path.isfile(encoder_path):
+        st.error(f"❌ No se encontró el archivo del modelo o del codificador.\n\n"
+                 f"Asegúrate de subir 'modelo_rf.pkl' y 'label_encoder.pkl' a tu repositorio y que estén en la misma carpeta que este archivo.")
+        st.stop()
+
+    pipeline = joblib.load(modelo_path)
+    le = joblib.load(encoder_path)
     predicciones = pipeline.predict(textos)
     return le.inverse_transform(predicciones)
 
@@ -112,3 +115,4 @@ with tab2:
                         st.download_button("📥 Descargar Informe", f, file_name=nombre_archivo)
             else:
                 st.error("La columna especificada no existe en el archivo.")
+
