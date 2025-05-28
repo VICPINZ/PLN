@@ -1,4 +1,3 @@
-# app.py
 import os
 import joblib
 import pandas as pd
@@ -6,27 +5,33 @@ import streamlit as st
 from docx import Document
 import string
 from collections import Counter
+from sklearn.preprocessing import LabelEncoder
+from sklearn.pipeline import Pipeline
 import nltk
 import google.generativeai as genai
-from entrenar_modelo import entrenar_modelo
 
-# Configurar API Gemini
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-model = genai.GenerativeModel("gemini-1.5-flash")
-
-# Descargar stopwords
+# Descargar stopwords de NLTK
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 stopwords_es = set(stopwords.words('spanish'))
 
-# Función para predecir
+# Configurar clave de API de Gemini
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+# --- Función para predecir clasificación ---
 def predecir_clasificacion(textos):
-    pipeline = joblib.load('modelo_rf.pkl')
-    le = joblib.load('label_encoder.pkl')
+    try:
+        pipeline = joblib.load('modelo_rf.pkl')
+        le = joblib.load('label_encoder.pkl')
+    except FileNotFoundError:
+        st.error("El modelo entrenado no se ha encontrado. Asegúrate de entrenar el modelo primero.")
+        return None
+
     predicciones = pipeline.predict(textos)
     return le.inverse_transform(predicciones)
 
-# Función para generar recomendaciones
+# --- Función para generar recomendaciones ---
 def generar_recomendaciones(comentarios):
     entrada = " ".join(comentarios)
     prompt = f"Basado en los siguientes comentarios de recomendación, sugiere mejoras concretas:\n{entrada}\n\nRecomendaciones:"
@@ -36,8 +41,8 @@ def generar_recomendaciones(comentarios):
     except Exception as e:
         return f"Ocurrió un error al generar las recomendaciones: {e}"
 
-# Función para generar informe Word
-def generar_informe(df, recomendaciones, nombre_archivo, resumen):
+# --- Función para generar informe Word ---
+def generar_informe(comentarios, recomendaciones, nombre_archivo, resumen):
     doc = Document()
     doc.add_heading("Informe de Resultados de la Encuesta", 0)
 
@@ -63,23 +68,6 @@ st.title("Análisis de Encuesta - Ministerio de Defensa")
 
 tab1, tab2 = st.tabs(["📊 Entrenamiento del Modelo", "📄 Generación de Informe"])
 
-# --- Pestaña 1: Entrenamiento ---
-with tab1:
-    st.header("Entrenar modelo de clasificación de texto")
-    archivo_entrenamiento = st.file_uploader("Cargar archivo Excel para entrenamiento", type=["xlsx"], key="entrenamiento")
-    if archivo_entrenamiento:
-        df_entrenamiento = pd.read_excel(archivo_entrenamiento)
-        st.write("Vista previa:", df_entrenamiento.head())
-
-        columnas = df_entrenamiento.columns.tolist()
-        variable_texto = st.selectbox("Selecciona la columna de texto", columnas, key="texto_entrenamiento")
-        columna_clasificacion = st.selectbox("Selecciona la columna de clasificación", columnas, key="clasificacion_entrenamiento")
-
-        if st.button("Entrenar modelo"):
-            accuracy = entrenar_modelo(df_entrenamiento, variable_texto, columna_clasificacion)
-            st.success(f"Modelo entrenado con éxito. Accuracy: {accuracy:.4f}")
-            st.info("Los archivos 'modelo_rf.pkl' y 'label_encoder.pkl' han sido guardados.")
-
 # --- Pestaña 2: Generación de Informe ---
 with tab2:
     st.header("Generar informe a partir de datos clasificados")
@@ -92,30 +80,35 @@ with tab2:
         if st.button("Generar Informe"):
             if variable in df_informe.columns:
                 df_informe[variable] = df_informe[variable].astype(str)
-                df_informe['clasificacion'] = predecir_clasificacion(df_informe[variable])
 
-                resumen = []
-                for clase, grupo in df_informe.groupby('clasificacion'):
-                    textos = " ".join(grupo[variable].tolist()).lower()
-                    textos = textos.translate(str.maketrans('', '', string.punctuation))
-                    palabras = [w for w in textos.split() if w not in stopwords_es and len(w) > 2]
-                    mas_comunes = [w for w, _ in Counter(palabras).most_common(10)]
-                    resumen.append({
-                        'Clase': clase,
-                        'Conteo': len(grupo),
-                        'Top 10 palabras': ", ".join(mas_comunes)
-                    })
+                predicciones = predecir_clasificacion(df_informe[variable])
+                if predicciones is None:
+                    st.warning("No se pudo generar el informe debido a la falta del modelo.")
+                else:
+                    df_informe['clasificacion'] = predicciones
 
-                st.subheader("Resumen por clase")
-                st.dataframe(pd.DataFrame(resumen))
+                    resumen = []
+                    for clase, grupo in df_informe.groupby('clasificacion'):
+                        textos = " ".join(grupo[variable].tolist()).lower()
+                        textos = textos.translate(str.maketrans('', '', string.punctuation))
+                        palabras = [w for w in textos.split() if w not in stopwords_es and len(w) > 2]
+                        mas_comunes = [w for w, _ in Counter(palabras).most_common(10)]
+                        resumen.append({
+                            'Clase': clase,
+                            'Conteo': len(grupo),
+                            'Top 10 palabras': ", ".join(mas_comunes)
+                        })
 
-                recomendaciones_comentarios = df_informe[df_informe['clasificacion'] == 'COMENTARIO'][variable].tolist()
-                recomendaciones_generadas = generar_recomendaciones(recomendaciones_comentarios) if recomendaciones_comentarios else "No se encontraron recomendaciones para analizar."
+                    st.subheader("Resumen por clase")
+                    st.dataframe(pd.DataFrame(resumen))
 
-                nombre_archivo = "Informe_Encuesta.docx"
-                generar_informe(df_informe[[variable, 'clasificacion']].rename(columns={variable: 'comentario'}), recomendaciones_generadas, nombre_archivo, resumen)
+                    recomendaciones_comentarios = df_informe[df_informe['clasificacion'] == 'COMENTARIO'][variable].tolist()
+                    recomendaciones_generadas = generar_recomendaciones(recomendaciones_comentarios) if recomendaciones_comentarios else "No se encontraron recomendaciones para analizar."
 
-                with open(nombre_archivo, "rb") as f:
-                    st.download_button("📥 Descargar Informe", f, file_name=nombre_archivo)
+                    nombre_archivo = "Informe_Encuesta.docx"
+                    generar_informe(df_informe[[variable, 'clasificacion']].rename(columns={variable: 'comentario'}), recomendaciones_generadas, nombre_archivo, resumen)
+
+                    with open(nombre_archivo, "rb") as f:
+                        st.download_button("📥 Descargar Informe", f, file_name=nombre_archivo)
             else:
                 st.error("La columna especificada no existe en el archivo.")
