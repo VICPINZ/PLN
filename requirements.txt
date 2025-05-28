@@ -7,4 +7,3 @@ scikit-learn
 openpyxl
 fpdf
 spacy
-spacy.es_core_news_sm
