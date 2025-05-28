@@ -1,20 +1,11 @@
-import subprocess
-import sys
-import os
 import streamlit as st
 import pandas as pd
 import joblib
-from docx import Document
 import google.generativeai as genai
-from sklearn.base import BaseEstimator, TransformerMixin
 import string
+import re
 from collections import Counter
 from fpdf import FPDF
-import spacy
-
-
-# Cargar modelo de spaCy
-nlp = spacy.load("es_core_news_sm")
 
 # Configurar la clave de API de Gemini
 genai.configure(api_key=st.secrets["GENAI_API_KEY"])
@@ -22,16 +13,9 @@ genai.configure(api_key=st.secrets["GENAI_API_KEY"])
 # Seleccionar el modelo de Gemini
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# Cargar modelos de clasificación
+# Cargar modelos de clasificación una sola vez
 pipeline = joblib.load('modelo_rf.pkl')
 le = joblib.load('label_encoder.pkl')
-
-# Clase SpacyVectorizer (si la necesitas en el pipeline)
-class SpacyVectorizer(BaseEstimator, TransformerMixin):
-    def fit(self, X, y=None):
-        return self
-    def transform(self, X):
-        return [nlp(text).vector for text in X]
 
 # Función para predecir nuevas clasificaciones
 def predecir_clasificacion(textos):
@@ -48,7 +32,16 @@ def generar_recomendaciones(comentarios):
     except Exception as e:
         return f"Ocurrió un error al generar las recomendaciones: {e}"
 
-# Función para generar informe PDF
+# Tokenización simple (sin spacy)
+def limpiar_texto(texto):
+    texto = texto.lower()
+    texto = texto.translate(str.maketrans('', '', string.punctuation))
+    palabras = re.findall(r'\b\w+\b', texto)
+    stopwords = set(["de", "la", "y", "el", "en", "que", "a", "los", "del", "se", "las", "por", "un", "para", "con", "no", "una", "su", "al", "es"])  # Lista simple de stopwords
+    palabras = [w for w in palabras if w not in stopwords and len(w) > 2]
+    return palabras
+
+# Función para generar informe pdf
 def generar_informe_pdf(resumen, recomendaciones, nombre_archivo):
     pdf = FPDF()
     pdf.add_page()
@@ -94,14 +87,10 @@ if archivo:
             df['clasificacion'] = predecir_clasificacion(df[variable])
 
             # Tabla resumen por clase
-            stopwords = nlp.Defaults.stop_words
-
             resumen = []
             for clase, grupo in df.groupby('clasificacion'):
-                textos = " ".join(grupo[variable].tolist()).lower()
-                # Quitar puntuación
-                textos = textos.translate(str.maketrans('', '', string.punctuation))
-                palabras = [w for w in textos.split() if w not in stopwords and len(w) > 2]
+                textos = " ".join(grupo[variable].tolist())
+                palabras = limpiar_texto(textos)
                 mas_comunes = [w for w, _ in Counter(palabras).most_common(10)]
                 resumen.append({
                     'Clase': clase,
@@ -119,11 +108,9 @@ if archivo:
             else:
                 recomendaciones_generadas = "No se encontraron recomendaciones para analizar."
 
-            # Mostrar recomendaciones en pantalla
             st.subheader("Recomendaciones Generadas")
             st.write(recomendaciones_generadas)
 
-            # Generar informe PDF
             nombre_archivo = "Informe_Encuesta.pdf"
             generar_informe_pdf(resumen, recomendaciones_generadas, nombre_archivo)
 
