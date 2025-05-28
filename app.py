@@ -1,120 +1,68 @@
+# app.py
 import streamlit as st
 import pandas as pd
 import joblib
-import google.generativeai as genai
-import string
-import re
-from collections import Counter
-from fpdf import FPDF
+from sklearn.exceptions import NotFittedError
 
-# Configurar la clave de API de Gemini
-genai.configure(api_key=st.secrets["GENAI_API_KEY"])
+# Cargar modelos entrenados
+try:
+    pipeline = joblib.load('modelo_rf.pkl')
+    le = joblib.load('label_encoder.pkl')
+except FileNotFoundError:
+    pipeline = None
+    le = None
 
-# Seleccionar el modelo de Gemini
-model = genai.GenerativeModel("gemini-1.5-flash")
+def main():
+    st.set_page_config(page_title="Clasificación de Comentarios", layout="centered")
+    st.title("📊 Clasificador de Comentarios (PLN)")
 
-# Cargar modelos de clasificación una sola vez
-pipeline = joblib.load('modelo_rf.pkl')
-le = joblib.load('label_encoder.pkl')
+    st.sidebar.header("Opciones")
 
-# Función para predecir nuevas clasificaciones
-def predecir_clasificacion(textos):
-    predicciones = pipeline.predict(textos)
-    return le.inverse_transform(predicciones)
+    menu = st.sidebar.selectbox("Selecciona una opción:", ["Predicción de comentarios", "Entrenar modelo"])
 
-# Función para generar recomendaciones con Gemini
-def generar_recomendaciones(comentarios):
-    entrada = " ".join(comentarios)
-    prompt = f"Basado en los siguientes comentarios de recomendación, sugiere mejoras concretas:\n{entrada}\n\nRecomendaciones:"
-    try:
-        response = model.generate_content(prompt)
-        return response.text.strip()
-    except Exception as e:
-        return f"Ocurrió un error al generar las recomendaciones: {e}"
+    if menu == "Predicción de comentarios":
+        if pipeline is None or le is None:
+            st.warning("⚠️ No se ha cargado un modelo entrenado. Por favor, entrena uno primero en la pestaña 'Entrenar modelo'.")
+            return
+        
+        st.subheader("Predicción de Comentarios")
+        comentario = st.text_area("Escribe tu comentario aquí:")
 
-# Tokenización simple (sin spacy)
-def limpiar_texto(texto):
-    texto = texto.lower()
-    texto = texto.translate(str.maketrans('', '', string.punctuation))
-    palabras = re.findall(r'\b\w+\b', texto)
-    stopwords = set(["de", "la", "y", "el", "en", "que", "a", "los", "del", "se", "las", "por", "un", "para", "con", "no", "una", "su", "al", "es"])  # Lista simple de stopwords
-    palabras = [w for w in palabras if w not in stopwords and len(w) > 2]
-    return palabras
-
-# Función para generar informe pdf
-def generar_informe_pdf(resumen, recomendaciones, nombre_archivo):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
-
-    # Título
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, "Informe de Resultados de la Encuesta", ln=True, align='C')
-    pdf.ln(10)
-
-    # Resumen por clase
-    pdf.set_font("Arial", 'B', 14)
-    pdf.cell(0, 10, "Resumen por clase", ln=True)
-    pdf.set_font("Arial", size=12)
-    for fila in resumen:
-        pdf.cell(0, 10, f"Clase: {fila['Clase']}", ln=True)
-        pdf.cell(0, 10, f"Conteo: {fila['Conteo']}", ln=True)
-        pdf.multi_cell(0, 10, f"Top 10 palabras: {fila['Top 10 palabras']}")
-        pdf.ln(5)
-
-    # Propuesta de Mejora
-    pdf.set_font("Arial", 'B', 14)
-    pdf.cell(0, 10, "Propuesta de Mejora", ln=True)
-    pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 10, recomendaciones)
-
-    # Guardar el PDF
-    pdf.output(nombre_archivo)
-
-# --- Interfaz en Streamlit ---
-st.title("Análisis de Encuesta - Ministerio de Defensa")
-
-archivo = st.file_uploader("Cargar archivo Excel", type=["xlsx"])
-if archivo:
-    df = pd.read_excel(archivo)
-    st.write("Vista previa de datos:", df.head())
-
-    variable = st.text_input("Ingrese el nombre de la variable de texto:")
-    if st.button("Generar Informe"):
-        if variable in df.columns:
-            df = df.dropna(subset=[variable])
-            df[variable] = df[variable].astype(str)
-            df['clasificacion'] = predecir_clasificacion(df[variable])
-
-            # Tabla resumen por clase
-            resumen = []
-            for clase, grupo in df.groupby('clasificacion'):
-                textos = " ".join(grupo[variable].tolist())
-                palabras = limpiar_texto(textos)
-                mas_comunes = [w for w, _ in Counter(palabras).most_common(10)]
-                resumen.append({
-                    'Clase': clase,
-                    'Conteo': len(grupo),
-                    'Top 10 palabras': ", ".join(mas_comunes)
-                })
-            st.subheader("Resumen por clase")
-            st.dataframe(pd.DataFrame(resumen))
-
-            # Filtrar comentarios tipo Recomendación
-            recomendaciones_comentarios = df[df['clasificacion'].str.lower() == 'comentario'][variable].tolist()
-
-            if recomendaciones_comentarios:
-                recomendaciones_generadas = generar_recomendaciones(recomendaciones_comentarios)
+        if st.button("Predecir"):
+            if comentario.strip() == "":
+                st.warning("Por favor, ingresa un comentario.")
             else:
-                recomendaciones_generadas = "No se encontraron recomendaciones para analizar."
+                try:
+                    pred = pipeline.predict([comentario])[0]
+                    etiqueta = le.inverse_transform([pred])[0]
+                    st.success(f"✅ Clasificación del comentario: **{etiqueta}**")
+                except NotFittedError:
+                    st.error("El modelo no está entrenado. Entrena el modelo antes de usar esta funcionalidad.")
+    
+    elif menu == "Entrenar modelo":
+        st.subheader("Entrenar un nuevo modelo")
+        archivo = st.file_uploader("Carga tu archivo Excel con datos", type=["xlsx"])
+        if archivo is not None:
+            df = pd.read_excel(archivo)
+            st.write("📋 Vista previa de los datos:", df.head())
 
-            st.subheader("Recomendaciones Generadas")
-            st.write(recomendaciones_generadas)
+            columnas = df.columns.tolist()
+            columna_texto = st.selectbox("Selecciona la columna de texto:", columnas)
+            columna_clasificacion = st.selectbox("Selecciona la columna de clasificación:", columnas)
 
-            nombre_archivo = "Informe_Encuesta.pdf"
-            generar_informe_pdf(resumen, recomendaciones_generadas, nombre_archivo)
+            if st.button("Entrenar modelo"):
+                with st.spinner("Entrenando el modelo... Esto puede tardar un momento."):
+                    from train_model import entrenar_modelo
+                    archivo_path = f"datos_temporales.xlsx"
+                    df.to_excel(archivo_path, index=False)
+                    entrenar_modelo(archivo_path, columna_texto, columna_clasificacion)
 
-            with open(nombre_archivo, "rb") as f:
-                st.download_button("Descargar Informe", f, file_name=nombre_archivo)
-        else:
-            st.error("Variable no válida. La columna no existe en el archivo.")
+                    # Recargar modelos
+                    global pipeline, le
+                    pipeline = joblib.load('modelo_rf.pkl')
+                    le = joblib.load('label_encoder.pkl')
+
+                st.success("✅ Modelo entrenado y cargado exitosamente.")
+
+if __name__ == "__main__":
+    main()
