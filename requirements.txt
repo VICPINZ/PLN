@@ -7,4 +7,4 @@ scikit-learn
 openpyxl
 fpdf
 spacy
-spacy.load("es_core_news_sm")
+spacy.es_core_news_sm
