@@ -15,9 +15,13 @@ def entrenar_modelo(df, variable_texto, columna_clasificacion):
     le = LabelEncoder()
     y_encoded = le.fit_transform(y)
 
+    # Configuración básica sin parámetros avanzados
+    tfidf = TfidfVectorizer(max_features=5000, stop_words='spanish')
+    mlp = MLPClassifier(hidden_layer_sizes=(100,), max_iter=200, random_state=42)
+
     pipeline = Pipeline([
-        ('tfidf', TfidfVectorizer(max_features=5000, stop_words='spanish')),
-        ('mlp', MLPClassifier(hidden_layer_sizes=(128, 64), max_iter=300, random_state=42))
+        ('tfidf', tfidf),
+        ('mlp', mlp)
     ])
 
     pipeline.fit(X, y_encoded)
