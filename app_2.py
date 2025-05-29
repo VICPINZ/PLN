@@ -73,7 +73,7 @@ st.title("Análisis de Encuesta - Ministerio de Defensa")
 tab1, tab2, tab3 = st.tabs(["💡 Problemática Identificada","📊 Entrenamiento del Modelo", "📄 Generación de Informe"])
 
 # --- Pestaña 1: Entrenamiento ---
-with tab1:
+#with tab1:
 
 # --- Pestaña 2: Entrenamiento ---
 with tab2:
