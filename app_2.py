@@ -91,11 +91,11 @@ with tab1:
         | 3  | Recolectar datos | Respuestas de los participantes | Ninguna |
         | 4  | Separar preguntas abiertas y preguntas cerradas | Respuestas de la encuesta | Clasificación de textos |
         | 5  | Generar análisis descriptivo de preguntas cerradas | Respuestas estructuradas | Similitud de textos, Extracción de información (palabras clave) |        
-        | 6  | Generar análisis de preguntas abiertas | Respuestas abiertas | Clasificación de textos, Tópicos seleccionados |
-        | 6.1 | Limpieza de respuestas válidas | Texto de respuestas abiertas | Limpieza de texto, Corrección ortográfica |
-        | 6.2 | Clasificar por temas de interés | Respuestas abiertas limpias | Clasificación de textos, Extracción de entidades nombradas |
-        | 6.3 | Agrupar comentarios por subtemas | Respuestas organizadas | Agrupamiento de textos (clustering), Tópicos seleccionados |
-        | 6.4 | Generar recomendación según sugerencias | Comentarios clasificados | Extracción de información (entidades clave) |
+        | 6  | **Generar análisis de preguntas abiertas** | Respuestas abiertas | Clasificación de textos, Tópicos seleccionados |
+        | 6.1 | **Limpieza de respuestas válidas** | Texto de respuestas abiertas | Limpieza de texto, Corrección ortográfica |
+        | 6.2 | **Clasificar por temas de interés** | Respuestas abiertas limpias | Clasificación de textos, Extracción de entidades nombradas |
+        | 6.3 | **Agrupar comentarios por subtemas** | Respuestas organizadas | Agrupamiento de textos (clustering), Tópicos seleccionados |
+        | 6.4 | **Generar recomendación según sugerencias** | Comentarios clasificados | Extracción de información (entidades clave) |
         | 7  | Generar informe completo de la actividad | Resultados del análisis | Resumen basado en abstracción |
         """, unsafe_allow_html=True)
     
