@@ -72,41 +72,58 @@ st.title("Análisis de Encuesta - Ministerio de Defensa")
 
 tab1, tab2, tab3 = st.tabs(["💡 Problemática Identificada","📊 Entrenamiento del Modelo", "📄 Generación de Informe"])
 
-# --- Pestaña 1: Entrenamiento ---
+# --- Pestaña 1: Problema ---
 with tab1:
     with st.expander("📄 Procedimiento - Análisis de Encuesta"):
-    st.markdown("""
-    ## PROCEDIMIENTO  
-    ### APLICACIÓN Y ANÁLISIS ENCUESTA DE SATISFACCIÓN
+        st.markdown("""
+        ## PROCEDIMIENTO  
+        ### APLICACIÓN Y ANÁLISIS ENCUESTA DE SATISFACCIÓN
 
-    **Objetivo:**  
-    Implementación de una encuesta con preguntas abiertas y cerradas que permita detectar el nivel de satisfacción de los usuarios y aspectos a mejorar.
+        **Objetivo:**  
+        Implementación de una encuesta con preguntas abiertas y cerradas que permita detectar el nivel de satisfacción de los usuarios y aspectos a mejorar.
 
-    ---
-    ### Proceso:
+        ---
+        ### Proceso:
 
-    | No | Tarea dentro del proceso o actividad | Texto(s) de entrada | Función(es) básica(s) de NLP a utilizar |
-    |----|------------------------------------|--------------------|----------------------------------------|
-    | 1  | Diseño de la encuesta | Temas clave de evaluación | Generación automática de texto, Clasificación de textos |
-    | 2  | Implementar encuesta a participantes | Encuesta diseñada | Ninguna |
-    | 3  | Recolectar datos | Respuestas de los participantes | Ninguna |
-    | 4  | Separar preguntas abiertas y preguntas cerradas | Respuestas de la encuesta | Clasificación de textos |
-    | 5  | Generar análisis descriptivo de preguntas cerradas | Respuestas estructuradas | Similitud de textos, Extracción de información (palabras clave) |
+        | No | Tarea dentro del proceso o actividad | Texto(s) de entrada | Función(es) básica(s) de NLP a utilizar |
+        |----|------------------------------------|--------------------|----------------------------------------|
+        | 1  | Diseño de la encuesta | Temas clave de evaluación | Generación automática de texto, Clasificación de textos |
+        | 2  | Implementar encuesta a participantes | Encuesta diseñada | Ninguna |
+        | 3  | Recolectar datos | Respuestas de los participantes | Ninguna |
+        | 4  | Separar preguntas abiertas y preguntas cerradas | Respuestas de la encuesta | Clasificación de textos |
+        | 5  | Generar análisis descriptivo de preguntas cerradas | Respuestas estructuradas | Similitud de textos, Extracción de información (palabras clave) |
 
-    ---
-    ### Análisis de preguntas abiertas:
+        ---
+        ### Análisis de preguntas abiertas:
 
-    | No | Sub-tareas | Entrada | Salida |
-    |----|------------|---------|--------|
-    | 6  | Generar análisis de preguntas abiertas | Respuestas abiertas | Clasificación de textos, Tópicos seleccionados |
-    | 6.1 | Limpieza de respuestas válidas | Texto de respuestas abiertas | Limpieza de texto, Corrección ortográfica |
-    | 6.2 | Clasificar por temas de interés | Respuestas abiertas limpias | Clasificación de textos, Extracción de entidades nombradas |
-    | 6.3 | Agrupar comentarios por subtemas | Respuestas organizadas | Agrupamiento de textos (clustering), Tópicos seleccionados |
-    | 6.4 | Generar recomendación según sugerencias | Comentarios clasificados | Extracción de información (entidades clave) |
+        | No | Sub-tareas | Entrada | Salida |
+        |----|------------|---------|--------|
+        | 6  | Generar análisis de preguntas abiertas | Respuestas abiertas | Clasificación de textos, Tópicos seleccionados |
+        | 6.1 | Limpieza de respuestas válidas | Texto de respuestas abiertas | Limpieza de texto, Corrección ortográfica |
+        | 6.2 | Clasificar por temas de interés | Respuestas abiertas limpias | Clasificación de textos, Extracción de entidades nombradas |
+        | 6.3 | Agrupar comentarios por subtemas | Respuestas organizadas | Agrupamiento de textos (clustering), Tópicos seleccionados |
+        | 6.4 | Generar recomendación según sugerencias | Comentarios clasificados | Extracción de información (entidades clave) |
 
-    ---
-    | 7  | Generar informe completo de la actividad | Resultados del análisis | Resumen basado en abstracción |
-    """, unsafe_allow_html=True)
+        ---
+        | 7  | Generar informe completo de la actividad | Resultados del análisis | Resumen basado en abstracción |
+        """, unsafe_allow_html=True)
+    
+    with st.expander("📊 ¿Qué se busca con el uso de PLN?"):
+        st.image("ruta/a/tu/imagen.png", caption="Objetivo del proyecto - PLN", use_column_width=True)
+
+        st.markdown("""
+        ## 💡 Objetivo de la solución
+
+        **Comparativa entre el estado actual y el esperado al implementar técnicas de PLN:**
+
+        | Actualmente | Esperado |
+        |-------------|-----------|
+        | El funcionario dedica 6 horas limpiando y revisando preguntas en formato tabular. | Disminuir significativamente el tiempo de procesamiento gracias a la aplicación de técnicas de PLN. |
+        | Procesos **no automatizados** que limitan la eficiencia. | Implementación de **análisis automatizados** y mejora de la productividad. |
+        | Exposición a posibles enfermedades laborales debido al alto desgaste visual por el trabajo manual. | Disminución de la exposición a la pantalla, **reducción de riesgo** a enfermedad laboral. |
+
+        ---
+        """, unsafe_allow_html=True)
     
 # --- Pestaña 2: Entrenamiento ---
 with tab2:
