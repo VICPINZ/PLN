@@ -9,6 +9,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.pipeline import Pipeline
 import nltk
 import google.generativeai as genai
+from entrenar_modelo.py import entrenar_modelo
 
 # Descargar stopwords de NLTK
 nltk.download('stopwords')
