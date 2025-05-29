@@ -71,6 +71,25 @@ st.title("Análisis de Encuesta - Ministerio de Defensa")
 
 tab1, tab2 = st.tabs(["📊 Entrenamiento del Modelo", "📄 Generación de Informe"])
 
+
+# --- Pestaña 1: Entrenamiento ---
+with tab1:
+    st.header("Entrenar modelo de clasificación de texto")
+    archivo_entrenamiento = st.file_uploader("Cargar archivo Excel para entrenamiento", type=["xlsx"], key="entrenamiento")
+    if archivo_entrenamiento:
+        df_entrenamiento = pd.read_excel(archivo_entrenamiento)
+        st.write("Vista previa:", df_entrenamiento.head())
+
+        columnas = df_entrenamiento.columns.tolist()
+        variable_texto = st.selectbox("Selecciona la columna de texto", columnas, key="texto_entrenamiento")
+        columna_clasificacion = st.selectbox("Selecciona la columna de clasificación", columnas, key="clasificacion_entrenamiento")
+
+        if st.button("Entrenar modelo"):
+            accuracy = entrenar_modelo(df_entrenamiento, variable_texto, columna_clasificacion)
+            st.success(f"Modelo entrenado con éxito. Accuracy: {accuracy:.4f}")
+            st.info("Los archivos 'modelo_rf.pkl' y 'label_encoder.pkl' han sido guardados.")
+
+
 # --- Pestaña 2: Generación de Informe ---
 with tab2:
     st.header("Generar informe a partir de datos clasificados")
