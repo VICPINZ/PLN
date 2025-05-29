@@ -21,7 +21,7 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 
 # --- Función para predecir clasificación ---
 def predecir_clasificacion(textos):
-    modelo_path = 'modelo_rf.pkl'
+    modelo_path = 'modelo_entrenado.pkl'
     encoder_path = 'label_encoder.pkl'
 
     if not os.path.isfile(modelo_path) or not os.path.isfile(encoder_path):
