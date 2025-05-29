@@ -88,7 +88,7 @@ with tab1:
         if st.button("Entrenar modelo"):
             accuracy = entrenar_modelo(df_entrenamiento, variable_texto, columna_clasificacion)
             st.success(f"Modelo entrenado con éxito. Accuracy: {accuracy:.4f}")
-            st.info("Los archivos 'modelo_rf.pkl' y 'label_encoder.pkl' han sido guardados.")
+            st.info("Los archivos 'modelo_entrenado.pkl' y 'label_encoder.pkl' han sido guardados.")
 
 
 # --- Pestaña 2: Generación de Informe ---
