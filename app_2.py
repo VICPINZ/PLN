@@ -77,8 +77,7 @@ with tab1:
     with st.expander("📄 Procedimiento - Análisis de Encuesta"):
         st.markdown("""
         ## PROCEDIMIENTO  
-        ### APLICACIÓN Y ANÁLISIS ENCUESTA DE SATISFACCIÓN
-
+        
         **Objetivo:**  
         Implementación de una encuesta con preguntas abiertas y cerradas que permita detectar el nivel de satisfacción de los usuarios y aspectos a mejorar.
 
@@ -91,26 +90,16 @@ with tab1:
         | 2  | Implementar encuesta a participantes | Encuesta diseñada | Ninguna |
         | 3  | Recolectar datos | Respuestas de los participantes | Ninguna |
         | 4  | Separar preguntas abiertas y preguntas cerradas | Respuestas de la encuesta | Clasificación de textos |
-        | 5  | Generar análisis descriptivo de preguntas cerradas | Respuestas estructuradas | Similitud de textos, Extracción de información (palabras clave) |
-
-        ---
-        ### Análisis de preguntas abiertas:
-
-        | No | Sub-tareas | Entrada | Salida |
-        |----|------------|---------|--------|
+        | 5  | Generar análisis descriptivo de preguntas cerradas | Respuestas estructuradas | Similitud de textos, Extracción de información (palabras clave) |        
         | 6  | Generar análisis de preguntas abiertas | Respuestas abiertas | Clasificación de textos, Tópicos seleccionados |
         | 6.1 | Limpieza de respuestas válidas | Texto de respuestas abiertas | Limpieza de texto, Corrección ortográfica |
         | 6.2 | Clasificar por temas de interés | Respuestas abiertas limpias | Clasificación de textos, Extracción de entidades nombradas |
         | 6.3 | Agrupar comentarios por subtemas | Respuestas organizadas | Agrupamiento de textos (clustering), Tópicos seleccionados |
         | 6.4 | Generar recomendación según sugerencias | Comentarios clasificados | Extracción de información (entidades clave) |
-
-        ---
         | 7  | Generar informe completo de la actividad | Resultados del análisis | Resumen basado en abstracción |
         """, unsafe_allow_html=True)
     
     with st.expander("📊 ¿Qué se busca con el uso de PLN?"):
-        st.image("ruta/a/tu/imagen.png", caption="Objetivo del proyecto - PLN", use_column_width=True)
-
         st.markdown("""
         ## 💡 Objetivo de la solución
 
