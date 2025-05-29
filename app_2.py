@@ -140,7 +140,9 @@ with tab3:
         df_informe = pd.read_excel(archivo_informe)
         st.write("Vista previa:", df_informe.head())
 
-        variable = st.text_input("Nombre de la columna de texto:", key="texto_informe")
+        variables = df_informe.columns.tolist()
+        variable = st.selectbox("Selecciona la columna de texto", variables)
+        
         if st.button("Generar Informe"):
             if variable in df_informe.columns:
                 df_informe[variable] = df_informe[variable].astype(str)
