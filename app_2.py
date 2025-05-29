@@ -70,11 +70,13 @@ def generar_informe(comentarios, recomendaciones, nombre_archivo, resumen):
 st.set_page_config(page_title="Análisis de Encuesta", layout="wide")
 st.title("Análisis de Encuesta - Ministerio de Defensa")
 
-tab1, tab2 = st.tabs(["📊 Entrenamiento del Modelo", "📄 Generación de Informe"])
-
+tab1, tab2, tab3 = st.tabs(["💡 Problemática Identificada","📊 Entrenamiento del Modelo", "📄 Generación de Informe"])
 
 # --- Pestaña 1: Entrenamiento ---
 with tab1:
+
+# --- Pestaña 2: Entrenamiento ---
+with tab2:
     st.header("Entrenar modelo de clasificación de texto")
     archivo_entrenamiento = st.file_uploader("Cargar archivo Excel para entrenamiento", type=["xlsx"], key="entrenamiento")
     if archivo_entrenamiento:
@@ -91,8 +93,8 @@ with tab1:
             st.info("Los archivos 'modelo_entrenado.pkl' y 'label_encoder.pkl' han sido guardados.")
 
 
-# --- Pestaña 2: Generación de Informe ---
-with tab2:
+# --- Pestaña 3: Generación de Informe ---
+with tab3:
     st.header("Generar informe a partir de datos clasificados")
     archivo_informe = st.file_uploader("Cargar archivo Excel para análisis", type=["xlsx"], key="informe")
     if archivo_informe:
